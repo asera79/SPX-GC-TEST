@@ -66,41 +66,6 @@ spec:
         persistentVolumeClaim:
           claimName: spx-gc-data-pvc
 ---
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: spx-gc-demo-reset-job
-spec:
-  schedule: "* */3 * * *"
-  concurrencyPolicy: Forbid
-  startingDeadlineSeconds: 100
-  suspend: false
-  successfulJobsHistoryLimit: 3
-  failedJobsHistoryLimit: 1
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          containers:
-          - name: spx-gc-demo-reset-container
-            imagePullPolicy: Always
-            image: _IMAGE
-            args:
-            - ./reset.sh
-            volumeMounts:
-            - name: spx-gc-assets-volume
-              mountPath: /usr/src/app/ASSETS
-            - name: spx-gc-data-volume
-              mountPath: /usr/src/app/DATAROOT
-          volumes:
-          - name: spx-gc-assets-volume
-            persistentVolumeClaim:
-              claimName: spx-gc-assets-pvc
-          - name: spx-gc-data-volume
-            persistentVolumeClaim:
-              claimName: spx-gc-data-pvc
-          restartPolicy: OnFailure
----
 apiVersion: networking.gke.io/v1beta1
 kind: FrontendConfig
 metadata:
