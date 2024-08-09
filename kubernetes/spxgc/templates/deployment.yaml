@@ -15,7 +15,7 @@ spec:
       containers:
       # SPXGC app
       - name: spx-app-container
-        image: asera79/spxgc
+        image: us-central1-docker.pkg.dev/smartpxcloudbu/smartpxcloudbu/spxgc
         imagePullPolicy: Always
         securityContext:
           runAsUser: 1000

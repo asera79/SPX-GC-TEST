@@ -171,3 +171,4 @@ _env.json
 .gitignore
 
 ASSETS/default_assets.txt
+kubernetes/keys/*
