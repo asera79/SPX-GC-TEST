@@ -11,12 +11,15 @@ COPY . ./
 RUN cp -R ASSETS _ASSETS && \
     cp -R DATAROOT _DATAROOT && \
     mv kubernetes/*.sh ./ && \
-    chmod +x *.sh
+    chmod +x *.sh && \
+    chown -R 1000:1000 /usr/src/app
+
+USER 1000:1000
 
 ENTRYPOINT ["/bin/sh", "-c"]
 
 CMD [ "./start.sh" ]
 
-VOLUME ["/usr/src/app/ASSETS", "/usr/src/app/DATAROOT", "/usr/src/app/LOGS"]
+VOLUME ["/usr/src/app/ASSETS", "/usr/src/app/DATAROOT", "/usr/src/app/LOG"]
 
 EXPOSE 5656

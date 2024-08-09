@@ -1,0 +1,11 @@
+defaultService: https://www.googleapis.com/compute/v1/projects/smartpxcloudbu/global/backendServices/spxgc
+hostRules:
+- hosts:
+  - 'demo.spx.graphics'
+  pathMatcher: demo-matcher
+kind: compute#urlMap
+name: spx-demo
+pathMatchers:
+- name: demo-matcher
+  description: 'Demo app matcher'  
+  defaultService: https://www.googleapis.com/compute/v1/projects/smartpxcloudbu/global/backendServices/spxgc

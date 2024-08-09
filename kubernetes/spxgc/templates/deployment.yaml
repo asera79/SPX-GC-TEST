@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spx-backend
+spec:
+  selector:
+    matchLabels:
+      app: spx-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: spx-app
+    spec:
+      containers:
+      # SPXGC app
+      - name: spx-app-container
+        image: asera79/spxgc
+        imagePullPolicy: Always
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          fsGroup: 1000
+        ports:
+        - containerPort: 5656
+        volumeMounts:
+        - name: spx-volume
+          mountPath: /usr/src/app/ASSETS
+          subPath: data/ASSETS
+        - name: spx-volume
+          mountPath: /usr/src/app/DATAROOT
+          subPath: data/DATAROOT
+      # Openssh
+      - name: openssh
+        image: 'linuxserver/openssh-server'
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 2222
+        env:
+          - name: USER_NAME
+            value: "demo"
+          - name: PUID
+            value: "1000"
+          - name: PGID
+            value: "1000"
+          - name: PUBLIC_KEY
+            valueFrom:
+              secretKeyRef:
+                name: openssh-secret
+                key: publicKey
+        volumeMounts:
+          - name: spx-volume
+            mountPath: /data
+            subPath: data
+          - name: spx-volume
+            mountPath: /config
+            subPath: openssh-config
+      # Volume   
+      volumes:
+      - name: spx-volume
+        persistentVolumeClaim:
+          claimName: spx-volume-claim
