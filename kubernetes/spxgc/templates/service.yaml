@@ -17,7 +17,7 @@ kind: Service
 metadata:
   name: spx-service
   annotations: 
-    cloud.google.com/neg: '{"exposed_ports": { "80": { "name": "spx-app-neg"} }}'
+    cloud.google.com/neg: '{"exposed_ports": { "80": { "name": "spx-{{ .Release.Namespace }}-neg"} }}'
 spec:
   type: LoadBalancer
   ports:
