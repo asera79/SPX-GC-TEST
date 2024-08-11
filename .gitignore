@@ -172,3 +172,4 @@ _env.json
 
 ASSETS/default_assets.txt
 kubernetes/keys/*
+*.tfstate*
