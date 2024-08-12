@@ -29,10 +29,21 @@ router.get('/files', async (req, res) => {
 
 
 router.get('/openFileFolder/', async (req, res) => {
-  // 
+  
+  // Added in 1.3.1
+  if (config.general.disableOpenFolderCommand != false) {
+    return res.status(403).send('Command disabled in config.');
+  }
+
   let relpath = req.query.file
   let filepath = path.join(spx.getStartUpFolder(), 'ASSETS', 'templates', relpath);
   let folder = path.dirname(filepath);
+
+  // Added in 1.3.1 for security: if not found nothing is done.
+  if (!fs.existsSync) {
+    logger.error('Folder ' + folder + ' does not exist.');
+    return res.status(404).send('Folder ' + folder + ' does not exist.');
+  }
 
   // open folder in each operating system
   if (process.platform === 'darwin') {
@@ -44,8 +55,6 @@ router.get('/openFileFolder/', async (req, res) => {
   } else {
     logger.error('Unknown operating system: ' + process.platform);
   }
-
-  
   res.sendStatus(200)
 }); // openFileFolder of a template for editing
 
@@ -221,13 +230,39 @@ router.post('/savefile/:filebasename', async (req, res) => {
   }; //file written
 }); // POST savefile API route ended
 
+router.post('/saverundownfile/:projectName/:rundownName', async (req, res) => {
+  // Added in 1.3.0
+  // Used by extensions that will modify rundowns and save them back to the server.
+  // This will also send a message to the UI to request a reload.
+  console.log('Saving rundown file ' + req.params.rundownName + ' in project ' + req.params.projectName + '...');
+  try {
+    if (!req.params.projectName || !req.params.rundownName) {
+      throw new Error("Project or filename missing from request, cannot save file.");
+    }
+    let datafile = path.join(directoryPath, req.params.projectName, 'data', req.params.rundownName) + '.json';
+    logger.debug('Saving rundown file ' + datafile + '...');
+    let data = req.body;
+    await spx.writeFile(datafile,data);
+    io.emit('SPXMessage2Client', {
+      spxcmd: "showMessageSlider",
+      msg:    "⛔ Rundown data was modified by API. Reload view!",
+      type:   "warn",
+      persist: true
+    });
+    res.status(200).send('OK, created file ' + datafile); // ok 200 AJAX RESPONSE
+  } catch (error) {
+    logger.error('Error in api/saverundownfile' + error);
+    res.status(500).send(error);
+  }; //file written
+}); // POST savefile API route ended
+
 
 router.post('/exportCSVfile', async (req, res) => {
   // console.log('Exporting CSV...');
   try {
     let showFolder  = req.body.foldername || "";
     let datafile    = req.body.datafile || "";
-    let dataJSONfile= path.join(spx.getStartUpFolder(), 'ASSETS', '..', 'DATAROOT', showFolder, 'data', datafile + '.json');
+    let dataJSONfile= path.join(spx.getDatarootFolder(), showFolder, 'data', datafile + '.json'); // Changed in 1.3.1
     let rundownData = await spx.GetJsonData(dataJSONfile);
     let CSVdata = ''
 
