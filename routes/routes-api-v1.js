@@ -299,7 +299,7 @@ const apiHandler = require('../utils/api-handlers.js');
       logger.verbose('invokeTemplateFunction: [' + dataOut.function + '] with params: [' + dataOut.params + '].');
       
       // Order changed in v.1.3.2
-      spx.httpPost(dataOut,'/gc/playout')
+      await spx.httpPostAsync(dataOut,'/gc/playout')
       res.status(200).json(dataOut);
       // 
     } catch (error) {
@@ -361,7 +361,7 @@ const apiHandler = require('../utils/api-handlers.js');
       dataOut.referrer     = 'directplayout';
 
       // Order changed in v.1.3.2
-      spx.httpPost(dataOut,'/gc/playout')
+      await spx.httpPostAsync(dataOut,'/gc/playout')
       res.status(200).json(dataOut);
       // 
     } catch (error) {
