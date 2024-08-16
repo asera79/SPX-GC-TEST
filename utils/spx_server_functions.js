@@ -72,36 +72,6 @@ module.exports = {
     }
   }, // httpPost
 
-  httpPostAsync: function (JSONdata, endPoint) {
-    return new Promise((resolve, reject) => {
-      // Send a http POST to an endpoint on the SPX server.
-      // console.log('httpPost received', endPoint, JSONdata);
-      let JSONdata2 = JSON.stringify(JSONdata);
-      try {
-        //JSONdata = JSON.stringify(JSONdata);
-        const options = { port: port, path: endPoint, method: 'POST', headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': JSONdata2.length
-          }
-        }
-        const httpreq = http.request(options, result => {
-          result.on('data', d => {
-            resolve()
-          })
-        })
-        httpreq.on('error', error => {
-          logger.error(error)
-          reject(error)
-        })
-        httpreq.write(JSONdata2)
-        httpreq.end()
-      } catch (error) {
-        logger.error('ERROR in spx.httpPost()', error);
-        reject(error)
-      }
-    });
-  }, // httpPost
-
   CCGServersConfigured: function () {
     // helper function which will return true / false
       if (config?.casparcg?.servers && config?.casparcg?.servers?.length > 0) {
